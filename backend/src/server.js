@@ -7,6 +7,7 @@ require("dotenv").config();
 require("./config/passport");
 
 const authRoutes = require("./routes/auth");
+const urlRoutes = require("./routes/url");
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use(passport.session());
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/api/url", urlRoutes);
 
 // Database connection
 mongoose

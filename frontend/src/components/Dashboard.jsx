@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import UrlShortenerForm from "./UrlShortenerForm";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -9,7 +10,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -38,14 +39,15 @@ const Dashboard = () => {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 p-4">
-            <h2 className="text-2xl font-bold mb-4">
-              Welcome to URL Shortener
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Create Short URL
             </h2>
-            <p className="text-gray-600">
-              URL shortening functionality will be implemented here.
+            <p className="mt-1 text-sm text-gray-600">
+              Enter a long URL to create a shortened version.
             </p>
           </div>
+          <UrlShortenerForm />
         </div>
       </main>
     </div>
