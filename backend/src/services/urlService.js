@@ -67,6 +67,26 @@ class UrlService {
 
     return url;
   }
+
+  static async getUserUrls(userId) {
+    try {
+      const urls = await Url.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .lean();
+
+      return urls.map((url) => ({
+        shortUrl: `${process.env.BASE_URL}/${url.shortCode}`,
+        shortCode: url.shortCode,
+        longUrl: url.longUrl,
+        topic: url.topic,
+        createdAt: url.createdAt,
+        clicks: url.clicks,
+      }));
+    } catch (error) {
+      console.error("Error fetching user URLs:", error);
+      throw new Error("Failed to fetch user URLs");
+    }
+  }
 }
 
 module.exports = UrlService;

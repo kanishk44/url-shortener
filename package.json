@@ -18,7 +18,9 @@
     "dotenv": "^16.3.1",
     "express-session": "^1.17.3",
     "cors": "^2.8.5",
-    "express-rate-limit": "^7.1.5"
+    "express-rate-limit": "^7.1.5",
+    "geoip-lite": "^1.4.9",
+    "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

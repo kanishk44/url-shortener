@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AnalyticsModal from "./AnalyticsModal";
 
 const UrlShortenerForm = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const UrlShortenerForm = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -145,13 +147,25 @@ const UrlShortenerForm = () => {
             />
             <button
               onClick={handleCopy}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
             >
               Copy
+            </button>
+            <button
+              onClick={() => setShowAnalytics(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Analytics
             </button>
           </div>
         </div>
       )}
+
+      <AnalyticsModal
+        isOpen={showAnalytics}
+        onClose={() => setShowAnalytics(false)}
+        shortCode={result?.shortCode}
+      />
     </div>
   );
 };

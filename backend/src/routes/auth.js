@@ -5,15 +5,24 @@ const router = express.Router();
 // Google OAuth routes
 router.get(
   "/google",
+  (req, res, next) => {
+    req.session.returnTo = req.headers.referer;
+    next();
+  },
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: `${process.env.CLIENT_URL}/login`,
-    successRedirect: process.env.CLIENT_URL,
-  })
+    session: true,
+    failureRedirect: "http://localhost:5173/login",
+  }),
+  (req, res) => {
+    const returnTo = req.session.returnTo || "http://localhost:5173/callback";
+    delete req.session.returnTo;
+    res.redirect(returnTo);
+  }
 );
 
 // Check authentication status
@@ -41,6 +50,22 @@ router.post("/logout", (req, res) => {
     }
     res.json({ message: "Logged out successfully" });
   });
+});
+
+// Auth check endpoint
+router.get("/check", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({
+      authenticated: true,
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        displayName: req.user.displayName,
+      },
+    });
+  } else {
+    res.status(401).json({ authenticated: false });
+  }
 });
 
 module.exports = router;

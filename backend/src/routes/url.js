@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const UrlService = require("../services/urlService");
+const AnalyticsService = require("../services/analyticsService");
 const { shortenLimiter } = require("../middleware/rateLimiter");
 const { isAuthenticated } = require("../middleware/auth");
 
@@ -46,15 +47,65 @@ router.post("/shorten", isAuthenticated, shortenLimiter, async (req, res) => {
   }
 });
 
-// Update the redirect route
-router.get("/:shortCode", async (req, res) => {
+// Get analytics for a URL
+router.get("/:shortCode/analytics", isAuthenticated, async (req, res) => {
   try {
     const { shortCode } = req.params;
     const url = await UrlService.getUrlByShortCode(shortCode);
-    res.redirect(url.longUrl);
+
+    // Check if user owns the URL
+    if (url.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized access to analytics" });
+    }
+
+    const analytics = await AnalyticsService.getUrlAnalytics(url._id);
+    res.json(analytics);
   } catch (error) {
-    console.error("Error in URL redirect:", error); // Add error logging
-    res.status(404).json({ error: "URL not found" });
+    console.error("Error fetching analytics:", error);
+    res.status(500).json({ error: "Failed to fetch analytics" });
+  }
+});
+
+// Get analytics for a specific topic
+router.get("/topic/:topic/analytics", isAuthenticated, async (req, res) => {
+  try {
+    const { topic } = req.params;
+    const userId = req.user._id;
+
+    if (!topic) {
+      return res.status(400).json({ error: "Topic is required" });
+    }
+
+    const analytics = await AnalyticsService.getTopicAnalytics(topic, userId);
+    res.json(analytics);
+  } catch (error) {
+    console.error("Error fetching topic analytics:", error);
+    res.status(500).json({ error: "Failed to fetch topic analytics" });
+  }
+});
+
+// Get overall analytics
+router.get("/overall/analytics", isAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const analytics = await AnalyticsService.getOverallAnalytics(userId);
+    res.json(analytics);
+  } catch (error) {
+    console.error("Error fetching overall analytics:", error);
+    res.status(500).json({ error: "Failed to fetch overall analytics" });
+  }
+});
+
+// Get user's URLs
+router.get("/user/urls", isAuthenticated, async (req, res) => {
+  try {
+    const urls = await UrlService.getUserUrls(req.user._id);
+    res.json(urls);
+  } catch (error) {
+    console.error("Error fetching user URLs:", error);
+    res.status(500).json({ error: "Failed to fetch URLs" });
   }
 });
 
